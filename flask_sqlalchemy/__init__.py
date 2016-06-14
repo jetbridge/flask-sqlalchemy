@@ -24,7 +24,7 @@ from operator import itemgetter
 from threading import Lock
 from sqlalchemy import orm, event, inspect
 from sqlalchemy.orm.exc import UnmappedClassError
-from sqlalchemy.orm.session import Session as SessionBase
+from sqlalchemy.orm.session import Session as SessionBase, sessionmaker
 from sqlalchemy.engine.url import make_url
 from sqlalchemy.ext.declarative import declarative_base, DeclarativeMeta
 from flask_sqlalchemy._compat import iteritems, itervalues, xrange, \
@@ -759,7 +759,7 @@ class SQLAlchemy(object):
         if options is None:
             options = {}
         scopefunc = options.pop('scopefunc', None)
-        return orm.scoped_session(partial(self.create_session, options),
+        return orm.scoped_session(sessionmaker(class_=SignallingSession, db=self, **options),
                                   scopefunc=scopefunc)
 
     def create_session(self, options):
